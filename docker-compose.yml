@@ -1,6 +1,6 @@
 # docker-compose.yml
 # Эталонный запуск n8n в Docker с безопасной поддержкой сертификатов Минцифры РФ (GigaChat API)
-# Разработано: Samartsev AI (https://samartsev.ru | https://t.me/samartsev_blog)
+# Разработано: Samartsev AI (https://samartsev.tech | https://t.me/samartsev_blog)
 
 services:
   n8n:

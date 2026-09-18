@@ -93,9 +93,9 @@ docker exec -it n8n-gigachat node -e "require('https').get('https://gigachat.dev
 
 ## 👨‍💻 Об авторе
 
-Разработано командой **[Samartsev AI](https://samartsev.ru)** — внедрение ИИ-агентов, LLM и автоматизации бизнес-процессов.
+Разработано командой **[Samartsev AI](https://samartsev.tech)** — внедрение ИИ-агентов, LLM и автоматизации бизнес-процессов.
 
-* 🌐 **Сайт:** [samartsev.ru](https://samartsev.ru)
+* 🌐 **Сайт:** [samartsev.tech](https://samartsev.tech)
 * 📢 **Telegram-канал:** [@samartsev_blog](https://t.me/samartsev_blog) — реальный опыт внедрения ИИ в российский бизнес без глянца.
 * 📝 **Статья на Хабре:** [Подружили n8n с GigaChat в Docker: корневой сертификат Минцифры, NODE_TLS и 3 дня боли](https://habr.com)
 

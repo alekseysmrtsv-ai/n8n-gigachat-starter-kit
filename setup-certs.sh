@@ -1,7 +1,7 @@
 #!/bin/bash
 # setup-certs.sh
 # Скрипт автоматической установки корневых сертификатов Минцифры РФ для Docker / Node.js / n8n
-# Автор: Samartsev AI (https://samartsev.ru | https://t.me/samartsev_blog)
+# Автор: Samartsev AI (https://samartsev.tech | https://t.me/samartsev_blog)
 
 set -e
 
