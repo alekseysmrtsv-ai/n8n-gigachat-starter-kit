@@ -1,0 +1,131 @@
+{
+  "name": "GigaChat — Базовый диалог (OAuth + Chat Completions)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1000001-0001-0001-0001-000000000001",
+      "name": "1. Запуск вручную (Manual Trigger)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ngw.devices.sberbank.ru:9443/api/v2/oauth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic YOUR_BASE64_CREDENTIALS_HERE"
+            },
+            {
+              "name": "RqUID",
+              "value": "={{ $execution.id || 'b511394f-4277-43b8-80f0-8c9096700001' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "scope",
+              "value": "GIGACHAT_API_PERS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000001-0001-0001-0001-000000000002",
+      "name": "2. Получить OAuth токен GigaChat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300],
+      "notesInFlow": true,
+      "notes": "Шлюз авторизации Сбера (ngw.devices.sberbank.ru). Требует сертификат Минцифры РФ."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gigachat.devices.sberbank.ru/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('2. Получить OAuth токен GigaChat').first().json.access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"GigaChat\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Ты — полезный русскоязычный ИИ-ассистент. Отвечай кратко, по делу и вежливо.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Привет! Расскажи о себе в двух предложениях.\"\n    }\n  ],\n  \"temperature\": 0.7\n}",
+        "options": {}
+      },
+      "id": "a1000001-0001-0001-0001-000000000003",
+      "name": "3. Запрос к GigaChat API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "notesInFlow": true,
+      "notes": "Основной эндпоинт генерации ответов GigaChat. Защищен SSL-сертификатом Минцифры."
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst assistantMessage = response?.choices?.[0]?.message?.content || 'Нет ответа от модели';\n\nreturn [{\n  json: {\n    answer: assistantMessage,\n    model: response?.model,\n    usage: response?.usage\n  }\n}];"
+      },
+      "id": "a1000001-0001-0001-0001-000000000004",
+      "name": "4. Извлечение ответа",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 300]
+    }
+  ],
+  "connections": {
+    "1. Запуск вручную (Manual Trigger)": {
+      "main": [
+        [
+          {
+            "node": "2. Получить OAuth токен GigaChat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Получить OAuth токен GigaChat": {
+      "main": [
+        [
+          {
+            "node": "3. Запрос к GigaChat API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Запрос к GigaChat API": {
+      "main": [
+        [
+          {
+            "node": "4. Извлечение ответа",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

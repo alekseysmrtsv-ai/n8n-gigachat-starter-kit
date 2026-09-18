@@ -1,0 +1,31 @@
+# docker-compose.yml
+# Эталонный запуск n8n в Docker с безопасной поддержкой сертификатов Минцифры РФ (GigaChat API)
+# Разработано: Samartsev AI (https://samartsev.ru | https://t.me/samartsev_blog)
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-gigachat
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      # Безопасное добавление сертификатов Минцифры в доверенные для Node.js:
+      - NODE_EXTRA_CA_CERTS=/home/node/certs/russian_trusted_root_ca.crt
+      # ВНИМАНИЕ: Никогда не включайте NODE_TLS_REJECT_UNAUTHORIZED=0 на проде!
+      # Он отключает проверку SSL для всех внешних сервисов и создает угрозу MITM-атак.
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # Монтируем сгенерированный скриптом setup-certs.sh бандл только для чтения (:ro):
+      - /opt/certs/russian_trusted_root_ca.crt:/home/node/certs/russian_trusted_root_ca.crt:ro
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  n8n_data:
